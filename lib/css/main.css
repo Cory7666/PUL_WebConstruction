@@ -1,0 +1,12 @@
+#test-div
+{
+    background-color: crimson;
+    text-align: justify;
+}
+
+/* Выровнять текст в крайних частях страницы по центру */
+#header div.col,
+#footer div.col
+{
+    text-align: center;
+}
