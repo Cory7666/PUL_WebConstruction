@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo apt install pdo-mysql
+sudo apt install apache2 pdo-mysql
