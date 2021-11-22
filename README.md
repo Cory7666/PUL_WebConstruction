@@ -7,30 +7,31 @@
 
 ```
 site
-├── __patterns__
-│   ├── __footer__.html
-│   ├── __header__.html
-│   └── pattern.html
 ├── account
+│   ├── __forms__.html
 │   └── index.php
 ├── actions
 │   ├── __db__.php
-│   ├── __sessions_and_cookies__.php
-│   └── index.php
+│   ├── index.php
+│   ├── old.index.php
+│   └── __sessions_and_cookies__.php
 ├── lib
 │   ├── bootstrap -> bootstrap-5.1.3-dist
 │   ├── bootstrap-5.1.3-dist
 │   ├── css
 │   │   └── main.css
 │   ├── img
+│   │   ├── favicons
+│   │   │   └── symbol.svg
+│   │   └── BNT.png
 │   └── js
-├── login
-│   └── index.php
-├── register
-│   └── index.php
-├── README.md
+├── __patterns__
+│   ├── __footer__.html
+│   ├── __header__.html
+│   └── pattern.html
 ├── autoconfig.sh
-└── index.php
+├── index.php
+└── README.md
 ```
 
 ## Описание файлов и каталогов
@@ -40,10 +41,8 @@ site
     * ./css/ -> CSS-стили.
     * ./img/ -> Все картинки.
     * ./js/ -> Все скрипты.
-- /account/ -> Страница: личный кабинет пользователя.
+- /account/ -> Страница: личный кабинет пользователя и выполнение действий над аккаунтом.
 - /actions/ -> Серверные скрипты: Обработка действий над аккаунтом.
-- /login/ -> Страница: Вход в аккаунт.
-- /register/ -> Страница: Регистрация нового аккаунта.
 - /README.md -> Описание проекта
 - /autoconfig.sh -> Установка всех необходимых библиотек и программ.
 - /index.php -> Страница: Главная страница сайта.
