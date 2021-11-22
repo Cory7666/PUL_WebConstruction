@@ -1,0 +1,34 @@
+<p>
+    Вы не авторизованы в системе. Но вы можете
+</p>
+
+<h2>Зарегистрироваться</h2>
+<form action="/actions/" method="get">
+    <input name="type"                         type="hidden" value="reg" placeholder="Тип запроса" />
+    
+    <input name="username"        tabindex="1" type="text"   value=""    placeholder="Логин" />
+    <input name="password"        tabindex="2" type="text"   value=""    placeholder="Пароль" />
+    
+    <input name="user_name"       tabindex="3" type="text"   value=""    placeholder="Имя" />
+    <input name="user_surname"    tabindex="4" type="text"   value=""    placeholder="Фамилия" />
+    <input name="user_patronymic" tabindex="5" type="text"   value=""    placeholder="Отчество (при наличии)" />
+    
+    <input name="user_email"      tabindex="6" type="text"   value=""    placeholder="e-mail (необязательно)" />
+    <input name="user_phone_num"  tabindex="7" type="text"   value=""    placeholder="Номер телефона" />
+
+    <input type="submit" tabindex="8" value="Зарегистрироваться">
+</form>
+
+<p>
+    или вы можете
+</p>
+
+<h2>Войти</h2>
+<form action="/actions/" method="get">
+    <input name="type"            type="hidden" value="login" placeholder="Тип запроса" />
+    
+    <input name="username"        tabindex="9" type="text"   value="" placeholder="Логин" />
+    <input name="password"        tabindex="10" type="text"   value=""  placeholder="Пароль" />
+
+    <input tabindex="11" type="submit" value="Зарегистрироваться">
+</form>

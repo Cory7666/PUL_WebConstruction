@@ -6,81 +6,110 @@
 
     /*** Начало выполнения программы ***/
 
-    /* Выход, если не был передан тип запроса */
-    if (!isset($_REQUEST["type"]) || $_REQUEST["type"] == "")
-    {
-        echo "Не был передан тип запроса.<br />";
-        echo "Вернуться на <a href=\"/\">ГЛАВНУЮ СТРАНИЦУ</a>.";
-        return 1;
-    }
+    // Перенаправить на страницу с личным кабинетом автоматически
+    header('Location: /account/');
 
-
-    
-    /* Запуск сессии */
-    session_start();
-
-    /* Выполнить действие, если необходимо Разлогиниться */
-    if ($_REQUEST["type"] == "logout")
-    {
-        logout_user();
-        echo "Выход выполнен.<br />";
-        echo "Вернуться на <a href=\"/\">ГЛАВНУЮ СТРАНИЦУ</a>.";
-        return 0;
-    }
-
-    /* Проверка  наличия Логина и Пароля */
-    if ( (!isset($_REQUEST["username"]) || $_REQUEST["username"] == "") || (!isset($_REQUEST["password"]) || $_REQUEST["password"] == "") )
-    {
-        echo "Не передан Логин или Пароль.<br />";
-        echo "Вернуться на <a href=\"/\">ГЛАВНУЮ СТРАНИЦУ</a>.";
-        return 2;
-    }
-
-    /* Нормализация полученных данных и хэширование Пароля */
-    $user       = trim($_REQUEST["username"]);
-    $passwd_md5 = hash("md5", trim($_REQUEST["password"]));
-    $query_type = trim($_REQUEST['type']);
+//    echo "Получен запрос. Обработка...<br />";
 
     try
     {
-        /* Подключение к базе данных */
+        /* Преобразование запроса в нормализированный вид */
+        $username        = trim($_REQUEST["username"]);
+        $passwd_md5      = hash("md5", trim($_REQUEST["password"]));
+        $user_name       = trim($_REQUEST["user_name"]);
+        $user_surname    = trim($_REQUEST["user_surname"]);
+        $user_patronymic = trim($_REQUEST["user_patronymic"]);
+        $user_email      = trim($_REQUEST["user_email"]);
+        $user_phone_num  = trim($_REQUEST["user_phone_num"]);
+        $query_type      = trim($_REQUEST['type']);
+
+        /* Запуск сессии и Подключение к БД через PDO */
+        session_start();
         $dbh = new PDO('mysql:host=localhost;dbname=proj_db', 'alex', '2467');
 
-        /* Обработка типа запроса */
+        /* Обработка запроса */
         switch ($query_type)
         {
+            // Попытка зарегистрироваться
             case "reg":
-                echo 'Регистрация нового пользователя.<br />';
-                if (!db_check_user($dbh, $user, $passwd_md5))
-                {
-                    echo "УДАЧА!<br />";
-                    db_add_user($dbh, $user, $passwd_md5);
-                    session_activate_user($user, $passwd_md5);
-                }
-                else
-                    echo "ПОТРАЧЕНО!<br />";
+//                echo "Попытка зарегистрироваться.<br />";
+
+                /* Проверить наличие минимально нужных данных */
+                if (!isset($_REQUEST["username"])       || ($_REQUEST["username"] == "")       ||
+                    !isset($_REQUEST["password"])       || ($_REQUEST["password"] == "")       ||
+                    !isset($_REQUEST["user_name"])      || ($_REQUEST["user_name"] == "")      ||
+                    !isset($_REQUEST["user_surname"])   || ($_REQUEST["user_surname"] == "")   ||
+                    !isset($_REQUEST["user_phone_num"]) || ($_REQUEST["user_phone_num"] == "")
+                ) throw new Exception("Кое-каких данных для регистрации не достаёт");
+
+                /* Проверить существованиу пользователя в БД перед добавлением */
+                if (db_has_username($dbh, $username)) throw new Exception("Пользователь уже существует. Нет необходимости регистрировать нового");
+
+                /* Добавить пользователя в БД и активировать его */
+                db_add_user($dbh, $username, $passwd_md5, $user_name, $user_surname, $user_patronymic, $user_email, $user_phone_num);
+                activate_user($username, $passwd_md5);
+
+//                echo "УДАЧА!<br />";
+
+                break;
+
+            // Попытка залогиниться
+            case "login":
+//                echo "Попытка залогиниться.<br />";
+
+                /* Проверить наличие необходимых данных */
+                if (!isset($_REQUEST["username"]) || !isset($_REQUEST["password"])) throw new Exception("Не получены Имя пользователя или Пароль");
+
+                /* Проверить существованиу пользователя с переданными данными */
+                if (!db_check_user($dbh, $username, $passwd_md5)) throw new Exception("Введены неверный Логин или Пароль или пользователь не зарегистрирован");
+
+                /* Логин пользователя в системе */
+                activate_user($username, $passwd_md5);
+                
+//                echo "УДАЧА!<br />";
+
                 break;
             
-            case "login":
-                echo "Попытка входа.<br />";
-                if (db_check_user($dbh, $user, $passwd_md5))
+            // Попытка разлогиниться
+            case "logout":
+//                echo "Попытка разлогиниться.<br />";
+
+                if (isset($_SESSION["is_authorized"]) && $_SESSION["is_authorized"])
+                // Пользователь был авторизован в системе. Выход
                 {
-                    echo "УДАЧА!<br />";
-                    session_activate_user($user, $passwd_md5);
+                    logout_user();
+//                    echo "УДАЧА!<br />";
                 }
                 else
-                    echo "ПОТРАЧЕНО!<br />";
-                break;
+                // Пользователь не был авторизован
+                {
+                    throw new Exception("Пользователь не был авторизован в системе. Не от куда выходить");
+                }
 
+                break;
+            
+            // Неверный запрос
             default:
-                echo "Неверный тип запроса.";
+                throw new Exception("Неверный тип запроса <".$query_type.">");
                 break;
         }
+
+        print "Перейти в <a href=\"/account/\">ЛИЧНЫЙ КАБИНЕТ</a>.<br />";
     }
+    // Ошибка PDO
     catch (PDOException $e)
     {
-        print "<br />Ошибка PDO: ".$e->getMessage()."<br />";
+        print "Ошибка PDO: ".$e->getMessage()."<br />";
+        print "Вернуться на <a href=\"/account/\">СТРАНИЦУ РЕГИСТРАЦИИ</a>.<br />";
     }
-
-    echo "Вернуться на <a href=\"/\">ГЛАВНУЮ СТРАНИЦУ</a>.";
+    // Исключение, выброшенное во время попытки регистрации/авторизации пользователя
+    catch (Exception $e)
+    {
+        print "Ошибка: ".$e->getMessage()."<br />";
+        print "Вернуться на <a href=\"/account/\">СТРАНИЦУ РЕГИСТРАЦИИ</a>.<br />";
+    }
+    finally
+    {
+        print "Вернуться на <a href=\"/\">ГЛАВНУЮ СТРАНИЦУ</a>.<br />";
+    }
 ?>
