@@ -1,34 +1,51 @@
-<p>
-    Вы не авторизованы в системе. Но вы можете
-</p>
+<div class="alert alert-danger">
+    Вы не авторизованы в системе. Но вы можете...
+</div>
 
 <h2>Зарегистрироваться</h2>
 <form action="/actions/" method="get">
-    <input name="type"                         type="hidden" value="reg" placeholder="Тип запроса" />
-    
-    <input name="username"        tabindex="1" type="text"   value=""    placeholder="Логин" />
-    <input name="password"        tabindex="2" type="text"   value=""    placeholder="Пароль" />
-    
-    <input name="user_name"       tabindex="3" type="text"   value=""    placeholder="Имя" />
-    <input name="user_surname"    tabindex="4" type="text"   value=""    placeholder="Фамилия" />
-    <input name="user_patronymic" tabindex="5" type="text"   value=""    placeholder="Отчество (при наличии)" />
-    
-    <input name="user_email"      tabindex="6" type="text"   value=""    placeholder="e-mail (необязательно)" />
-    <input name="user_phone_num"  tabindex="7" type="text"   value=""    placeholder="Номер телефона" />
+    <input name="type" type="hidden" value="reg" placeholder="Тип запроса" />
 
-    <input type="submit" tabindex="8" value="Зарегистрироваться">
+    <h3>Регистрационные данные</h3>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Логин</span>
+        <input class="form-control" name="username" tabindex="1" type="text" value="" placeholder="" required />
+        <span class="input-group-text">Пароль</span>
+        <input class="form-control" name="password" tabindex="2" type="text" value="" placeholder="" required />
+    </div>
+
+    <h3>Личная информация</h3>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Ф.И.О</span>
+        <input class="form-control" name="user_surname" tabindex="3" type="text" value="" placeholder="Фамилия" required />
+        <input class="form-control" name="user_name" tabindex="4" type="text" value="" placeholder="Имя" required />
+        <input class="form-control" name="user_patronymic" tabindex="5" type="text" value=""
+            placeholder="Отчество (при наличии)" />
+    </div>
+    <div class="input-group mb-3">
+        <input class="form-control" name="user_email" tabindex="6" type="text" value="" placeholder="e-mail (необязательно)" />
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">+</span>
+        <input class="form-control" name="user_phone_num" tabindex="7" type="text" value="" placeholder="Номер телефона" required />
+    </div>
+
+    <button class="btn-primary" type="submit" tabindex="8">Зарегистрироваться</button>
 </form>
 
-<p>
+<p class="mb-3 mt-4">
     или вы можете
 </p>
 
 <h2>Войти</h2>
 <form action="/actions/" method="get">
-    <input name="type"            type="hidden" value="login" placeholder="Тип запроса" />
-    
-    <input name="username"        tabindex="9" type="text"   value="" placeholder="Логин" />
-    <input name="password"        tabindex="10" type="text"   value=""  placeholder="Пароль" />
+    <input name="type" type="hidden" value="login" placeholder="Тип запроса" />
 
-    <input tabindex="11" type="submit" value="Зарегистрироваться">
+    <div class="input-group mb-3">
+        <input class="form-control" name="username" tabindex="9" type="text" value="" placeholder="Логин" />
+        <input class="form-control" name="password" tabindex="10" type="text" value="" placeholder="Пароль" />
+    </div>
+
+    <button class="btn-primary" type="submit" tabindex="8">Войти</button>
 </form>
+
