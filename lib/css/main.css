@@ -1,4 +1,6 @@
-#content-navbar
+#content-navbar,
+#site-header
 {
     position: sticky !important;
+    top: 0;
 }
