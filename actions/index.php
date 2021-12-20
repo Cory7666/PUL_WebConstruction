@@ -6,9 +6,6 @@
 
     /*** Начало выполнения программы ***/
 
-    // Перенаправить на страницу с личным кабинетом автоматически
-    header('Location: /account/');
-
 //    echo "Получен запрос. Обработка...<br />";
 
     try
@@ -51,6 +48,7 @@
 
 //                echo "УДАЧА!<br />";
 
+                header('Location: /account/');
                 break;
 
             // Попытка залогиниться
@@ -68,6 +66,7 @@
                 
 //                echo "УДАЧА!<br />";
 
+                header('Location: /account/?errcode=0');
                 break;
             
             // Попытка разлогиниться
@@ -86,6 +85,7 @@
                     throw new Exception("Пользователь не был авторизован в системе. Не от куда выходить");
                 }
 
+                header('Location: /account/');
                 break;
             
             // Неверный запрос
@@ -99,12 +99,14 @@
     // Ошибка PDO
     catch (PDOException $e)
     {
+        header('Location: /account/?errcode=1');
         print "Ошибка PDO: ".$e->getMessage()."<br />";
         print "Вернуться на <a href=\"/account/\">СТРАНИЦУ РЕГИСТРАЦИИ</a>.<br />";
     }
     // Исключение, выброшенное во время попытки регистрации/авторизации пользователя
     catch (Exception $e)
     {
+        header('Location: /account/?errcode=2');
         print "Ошибка: ".$e->getMessage()."<br />";
         print "Вернуться на <a href=\"/account/\">СТРАНИЦУ РЕГИСТРАЦИИ</a>.<br />";
     }

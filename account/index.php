@@ -7,14 +7,10 @@ session_start();
 $dbh = new PDO('mysql:host=localhost;dbname=proj_db', 'alex', '2467');
 
 
-if (!isset($_SESSION["username"]))
-{    
-    if (isset($_COOKIE["username"]) && isset($_COOKIE["password"]) && db_check_user($dbh, $_COOKIE["username"], $_COOKIE["password"]))
-    {
+if (!isset($_SESSION["username"])) {
+    if (isset($_COOKIE["username"]) && isset($_COOKIE["password"]) && db_check_user($dbh, $_COOKIE["username"], $_COOKIE["password"])) {
         activate_user($_COOKIE["username"], $_COOKIE["password"]);
-    }
-    else
-    {
+    } else {
         session_drop_settings();
     }
 }
@@ -41,33 +37,91 @@ if (!isset($_SESSION["username"]))
     <div id="content" class="container-md">
         <h1>Управление аккаунтом</h1>
         <?php
-            if (!$_SESSION["is_authorized"])
-            // Пользователь не авторизован
-            {
-                echo file_get_contents("__forms__.html");
-            }
-            else
-            // Пользователь авторизован
-            {
-                $user_info = db_get_user_info($dbh, $_SESSION["username"]);
-
-                echo "<p>Логин: ".$user_info["username"]."</p>";
-                echo "<p>Фамилия: ".$user_info["user_name"]."</p>";
-                echo "<p>Имя: ".$user_info["user_surname"]."</p>";
-                echo "<p>Отчество: ".$user_info["user_patronymic"]."</p>";
-                echo "<p>E-mail: ".$user_info["user_email"].
-                    (($user_info["user_email"] != "") ?
-                        "<a href=\"mailto:".$user_info["user_email"]."\">Отправить тестовое сообщение</a>" :
-                        ""
-                    )."</p>";
-                echo "<p>Номер телефона: ".$user_info["user_phone_num"]."<a href=\"tel:+".$user_info["user_phone_num"]."\">Проверить доступность</a></p>";
+        if (!$_SESSION["is_authorized"])
+        // Пользователь не авторизован
+        {
+            if (isset($_GET["errcode"]) && $_GET["errcode"] == 2) {
         ?>
-        
-        <form action="/actions/" method="get">
-            <input name="type" type="hidden" value="logout" placeholder="Тип запроса" />
-            <input type="submit" value="Выйти">
-        </form>
-        
+                <div class="alert alert-danger">
+                    Ошибка регистрации. Скорее всего, такой пользователь существует, или вы ввели неверные данные.
+                </div>
+            <?php
+            } else if (isset($_GET["errcode"]) && $_GET["errcode"] == 1) {
+            ?>
+                <div class="alert alert-danger">
+                    Ошибка PDO. Обратитесь к администратору сервера.
+                </div>
+            <?php
+            }
+            echo file_get_contents("__forms__.html");
+        } else
+        // Пользователь авторизован
+        {
+            $user_info = db_get_user_info($dbh, $_SESSION["username"]);
+            ?>
+            <?php if (isset($_GET["errcode"]) && $_GET["errcode"] == 0) {
+            ?>
+                <div class="alert alert-success">
+                    Успешная авторизация.
+                </div>
+            <?php
+            }
+            ?>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Информация</th>
+                        <th scope="col">Значение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td scope="col">Логин</td>
+                        <td scope="col"><?php echo $user_info["username"]; ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td scope="col">Фамилия</td>
+                        <td scope="col"><?php echo $user_info["user_surname"]; ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td scope="col">Имя</td>
+                        <td scope="col"><?php echo $user_info["user_name"]; ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">4</th>
+                        <td scope="col">Отчество</td>
+                        <td scope="col"><?php echo $user_info["user_patronymic"]; ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">5</th>
+                        <td scope="col">Email</td>
+                        <td scope="col"><?php
+                                        if ($user_info["user_email"]) {
+                                            echo "<a href=\"mailto:" . $user_info["user_email"] . "\">" . $user_info["user_email"] . "</a>";
+                                        } else {
+                                            echo "Не указано";
+                                        }
+                                        ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">6</th>
+                        <td scope="col">Номер телефона</td>
+                        <td scope="col"><?php
+                                        echo "<a href=\"tel:" . $user_info["user_phone_num"] . "\">+" . $user_info["user_phone_num"] . "</a>";
+                                        ?></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <form action="/actions/" method="get">
+                <input name="type" type="hidden" value="logout" placeholder="Тип запроса" />
+                <input type="submit" value="Выйти">
+            </form>
+
         <?php } ?>
     </div>
 
